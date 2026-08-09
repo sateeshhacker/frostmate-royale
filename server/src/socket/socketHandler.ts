@@ -365,7 +365,7 @@ export function registerSocketHandlers(io: Server, roomManager: RoomManager) {
         entry.state.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
         entry.state.turn = 'w';
         entry.state.status = 'playing';
-        entry.state.winner = undefined;
+        entry.state.winner = null;
         entry.state.winReason = undefined;
         entry.state.isCheck = false;
         entry.state.checkSquare = undefined;

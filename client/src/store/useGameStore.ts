@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { RoomState, PieceColor, ViewMode, AudioSettings, GameType } from '../types/index.js';
-import { soundEngine } from '../games/shared/audio/soundEngine.js';
+import { soundEngine } from '../audio/soundEngine.js';
 import { emitLeaveRoom } from '../socket/socketClient.js';
 
 interface GameStoreState {

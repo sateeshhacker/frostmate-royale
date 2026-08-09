@@ -16,12 +16,15 @@ export function runChessTestSuite(): { results: TestCaseResult[]; summary: { tot
   const results: TestCaseResult[] = [];
 
   const createMockRoom = (): RoomState => ({
+    createdAt: Date.now(),
     code: 'TEST01',
     gameType: 'chess',
     status: 'playing',
     turn: 'w',
-    whitePlayer: { id: 'p1', name: 'White', color: 'w', timeRemainingMs: 600000, connected: true },
-    blackPlayer: { id: 'p2', name: 'Black', color: 'b', timeRemainingMs: 600000, connected: true },
+    whitePlayer: { id: 'p1', name: 'White', avatar: '⚡', color: 'w', timeRemainingMs: 600000, connected: true },
+    blackPlayer: { id: 'p2', name: 'Black', avatar: '👑', color: 'b', timeRemainingMs: 600000, connected: true },
+    ludoPlayers: { red: null, green: null, yellow: null, blue: null },
+    winner: null,
     fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
     moveHistory: [],
     capturedWhite: [],
@@ -31,7 +34,8 @@ export function runChessTestSuite(): { results: TestCaseResult[]; summary: { tot
     spectators: [],
     chatMessages: [],
     timeControlSeconds: 600,
-    incSeconds: 0
+    incSeconds: 0,
+    countdown: 3
   });
 
   const record = (
@@ -296,7 +300,7 @@ export function runChessTestSuite(): { results: TestCaseResult[]; summary: { tot
   room.fen = 'rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2';
   engine = new ChessEngine(room);
   res = engine.makeMove({ from: 'd8', to: 'h4' });
-  record('CH-038', 'Check & End States', 'Checkmate', 'Checkmate detection', 'Critical', res.win && room.status === 'checkmate' && room.winner === 'b');
+  record('CH-038', 'Check & End States', 'Checkmate', 'Checkmate detection', 'Critical', !!res.win && room.status === 'checkmate' && room.winner === 'b');
 
   // CH-039: Stalemate detection
   room = createMockRoom();
