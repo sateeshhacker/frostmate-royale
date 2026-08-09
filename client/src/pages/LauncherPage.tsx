@@ -287,8 +287,8 @@ export const LauncherPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="w-full max-w-[1440px] mx-auto py-6 px-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#8D9AB2] gap-4 z-10">
-        <span>GAMEPLAY Platform © 2026. Play-First Gaming Hub.</span>
+      <footer className="w-full max-w-[1440px] mx-auto py-5 px-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#8D9AB2] gap-4 z-10">
+        <span>Developed by <strong className="text-cyan-400 font-extrabold">Sateesh</strong> • FrostMate Royale © 2026.</span>
         <div className="flex items-center gap-4 text-[#8D9AB2] font-bold uppercase tracking-wider text-[11px]">
           <span>Chess</span>
           <span>•</span>
