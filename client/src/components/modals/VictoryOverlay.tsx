@@ -28,7 +28,11 @@ export const VictoryOverlay: React.FC = () => {
     : (roomState?.winner === playerColor);
 
   const isDraw = roomState?.winner === 'draw';
-  const isOpponentLeft = roomState?.opponentLeft || roomState?.status === 'abandoned';
+  const isOpponentDisconnected =
+    (playerColor === 'w' && roomState?.blackPlayer && !roomState.blackPlayer.connected) ||
+    (playerColor === 'b' && roomState?.whitePlayer && !roomState.whitePlayer.connected);
+
+  const isOpponentLeft = roomState?.opponentLeft || roomState?.status === 'abandoned' || isOpponentDisconnected;
   const hasMyRematchRequest = roomState?.rematchRequestedBy?.includes(socket.id);
 
   useEffect(() => {

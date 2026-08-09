@@ -236,6 +236,8 @@ export class RoomManager {
       state.spectators = state.spectators.filter((s) => s.id !== socketId);
 
       if (disconnected) {
+        state.opponentLeft = true;
+
         if (state.status === 'waiting' || state.status === 'countdown') {
           if (state.gameType === 'ludo' && state.ludoPlayers) {
             (Object.keys(state.ludoPlayers) as LudoColor[]).forEach((col) => {
@@ -285,6 +287,10 @@ export class RoomManager {
             return { roomCode: code, roomState: state };
           }
         }
+
+        // For finished games (draw, checkmate, resigned, etc.), notify remaining player that opponent left
+        if (onTick) onTick(code, state);
+        return { roomCode: code, roomState: state };
       }
     }
     return null;
