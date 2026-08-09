@@ -1,0 +1,43 @@
+{
+  "name": "frostmate-royale-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/animejs": "^3.1.13",
+    "@types/three": "^0.185.4",
+    "animejs": "^4.5.0",
+    "canvas-confetti": "^1.9.3",
+    "chess.js": "^1.0.0-beta.6",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.1.9",
+    "frostmate-royale": "file:..",
+    "lucide-react": "^0.378.0",
+    "qrcode": "^1.5.3",
+    "react": "^18.3.1",
+    "react-chessboard": "^4.7.2",
+    "react-dom": "^18.3.1",
+    "socket.io-client": "^4.7.5",
+    "tailwind-merge": "^2.3.0",
+    "three": "^0.185.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "^1.6.4",
+    "@types/node": "^20.12.7",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.10"
+  }
+}
