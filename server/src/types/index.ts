@@ -108,6 +108,9 @@ export interface RoomState {
   chatMessages: ChatMessage[];
   pendingDrawOfferFrom?: string;
   pendingUndoOfferFrom?: string;
+  rematchRequestedBy?: string[];
+  opponentLeft?: boolean;
+  lastActionNotice?: string;
   countdown: number;
   disconnectCountdown?: number;
   disconnectedPlayerName?: string;

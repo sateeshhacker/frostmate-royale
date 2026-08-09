@@ -6,6 +6,7 @@ import { Copy, Check, Share2, QrCode, Loader2, X } from 'lucide-react';
 import { soundEngine } from '../../audio/soundEngine.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LudoColor } from '../../types/index.js';
+import { RenderAvatar } from '../ui/AvatarPack.js';
 
 export const WaitingModal: React.FC = () => {
   const roomState = useGameStore((s) => s.roomState);
@@ -93,19 +94,11 @@ export const WaitingModal: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             {activeLudoColors.map((color) => {
               const player = roomState.ludoPlayers?.[color];
-              const colorBgMap: Record<LudoColor, string> = {
-                red: 'from-red-600 to-rose-700',
-                green: 'from-emerald-600 to-teal-700',
-                yellow: 'from-amber-500 to-yellow-600',
-                blue: 'from-blue-600 to-indigo-700'
-              };
               return (
                 <div key={color} className="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center space-y-2">
                   {player ? (
                     <>
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${colorBgMap[color]} flex items-center justify-center text-xl shadow-lg`}>
-                        {player.avatar || '🎲'}
-                      </div>
+                      <RenderAvatar avatarId={player.avatar || 'av_alex'} className="w-11 h-11 rounded-2xl" size={20} />
                       <span className="font-bold text-xs text-white truncate max-w-[120px]">{player.name}</span>
                       <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
                         {color} Joined
@@ -130,9 +123,7 @@ export const WaitingModal: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             {/* Player 1 */}
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-glow-cyan">
-                {roomState.whitePlayer?.avatar || '⚡'}
-              </div>
+              <RenderAvatar avatarId={roomState.whitePlayer?.avatar || 'av_alex'} className="w-12 h-12 rounded-2xl" size={22} />
               <span className="font-bold text-sm text-white">{roomState.whitePlayer?.name || 'Player 1'}</span>
               <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/30">
                 Ready
@@ -143,9 +134,7 @@ export const WaitingModal: React.FC = () => {
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center space-y-2">
               {roomState.blackPlayer ? (
                 <>
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-2xl shadow-glow-purple">
-                    {roomState.blackPlayer.avatar}
-                  </div>
+                  <RenderAvatar avatarId={roomState.blackPlayer.avatar || 'av_zoe'} className="w-12 h-12 rounded-2xl" size={22} />
                   <span className="font-bold text-sm text-white">{roomState.blackPlayer.name}</span>
                   <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
                     Joined

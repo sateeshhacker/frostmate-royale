@@ -57,7 +57,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   userRole: null,
   viewMode: 'landing',
   playerName: localStorage.getItem('fm_player_name') || 'Grandmaster',
-  playerAvatar: localStorage.getItem('fm_player_avatar') || '⚡',
+  playerAvatar: localStorage.getItem('fm_player_avatar') || 'av_alex',
   socketConnected: false,
   selectedGameType: 'chess',
   selectedMaxPlayers: 2,

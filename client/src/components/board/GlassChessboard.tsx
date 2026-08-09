@@ -32,8 +32,8 @@ export const GlassChessboard: React.FC = () => {
   const boardOrientation = playerColor === 'b' ? 'black' : 'white';
   const isMyTurn =
     userRole === 'player' &&
-    roomState?.status === 'playing' &&
-    ((roomState.turn === 'w' && playerColor === 'w') || (roomState.turn === 'b' && playerColor === 'b'));
+    (roomState?.status === 'playing' || roomState?.status === 'waiting') &&
+    (playerColor ? roomState?.turn === playerColor : true);
 
   // Calculate legal target squares for a selected square
   const getMoveOptions = (square: string) => {
@@ -51,15 +51,15 @@ export const GlassChessboard: React.FC = () => {
       const isCapture = !!game.get(move.to as any);
       newSquares[move.to] = {
         background: isCapture
-          ? 'radial-gradient(circle, rgba(255, 65, 108, 0.8) 35%, transparent 40%)'
-          : 'radial-gradient(circle, rgba(0, 242, 254, 0.7) 25%, transparent 30%)',
+          ? 'radial-gradient(circle, rgba(239, 68, 68, 0.85) 30%, transparent 35%)'
+          : 'radial-gradient(circle, rgba(56, 189, 248, 0.7) 22%, transparent 27%)',
         borderRadius: '50%'
       };
     });
 
     newSquares[square] = {
-      background: 'rgba(0, 242, 254, 0.35)',
-      boxShadow: '0 0 15px rgba(0, 242, 254, 0.8)'
+      backgroundColor: 'rgba(56, 189, 248, 0.25)',
+      boxShadow: 'inset 0 0 8px rgba(56, 189, 248, 0.6)'
     };
 
     setOptionSquares(newSquares);
@@ -83,7 +83,7 @@ export const GlassChessboard: React.FC = () => {
       }
 
       const piece = game.get(square as any);
-      if (piece && piece.color === (playerColor === 'w' ? 'w' : 'b')) {
+      if (piece && piece.color === (playerColor === 'b' ? 'b' : 'w')) {
         const hasMoves = getMoveOptions(square);
         if (hasMoves) {
           setSelectedSquare(square);
@@ -141,21 +141,21 @@ export const GlassChessboard: React.FC = () => {
     if (roomState?.lastMove) {
       styles[roomState.lastMove.from] = {
         ...(styles[roomState.lastMove.from] || {}),
-        backgroundColor: 'rgba(127, 0, 255, 0.3)',
-        border: '1px solid rgba(127, 0, 255, 0.6)'
+        backgroundColor: 'rgba(124, 58, 237, 0.25)',
+        border: '1px solid rgba(124, 58, 237, 0.5)'
       };
       styles[roomState.lastMove.to] = {
         ...(styles[roomState.lastMove.to] || {}),
-        backgroundColor: 'rgba(127, 0, 255, 0.4)',
-        boxShadow: 'inset 0 0 12px rgba(127, 0, 255, 0.8)'
+        backgroundColor: 'rgba(124, 58, 237, 0.35)',
+        boxShadow: 'inset 0 0 10px rgba(124, 58, 237, 0.6)'
       };
     }
 
     if (roomState?.isCheck && roomState.checkSquare) {
       styles[roomState.checkSquare] = {
         ...(styles[roomState.checkSquare] || {}),
-        backgroundColor: 'rgba(255, 40, 60, 0.6)',
-        boxShadow: '0 0 25px rgba(255, 40, 60, 1), inset 0 0 15px rgba(255, 255, 255, 0.8)',
+        backgroundColor: 'rgba(239, 68, 68, 0.65)',
+        boxShadow: '0 0 15px rgba(239, 68, 68, 0.8)',
         animation: 'pulse 0.8s infinite alternate'
       };
     }
@@ -165,9 +165,9 @@ export const GlassChessboard: React.FC = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center">
-      {/* Cinematic Camera Zoom & Shake Wrapper */}
+      {/* Universal Tournament Board Stage */}
       <motion.div
-        initial={{ scale: 1.08, opacity: 0.9 }}
+        initial={{ scale: 1.02, opacity: 0.95 }}
         animate={{
           scale: 1,
           opacity: 1,
@@ -175,38 +175,27 @@ export const GlassChessboard: React.FC = () => {
           y: roomState?.isCheck ? [2, -2, 2, -2, 0] : 0
         }}
         transition={{
-          scale: { duration: 1.2, ease: 'easeOut' },
+          scale: { duration: 0.8, ease: 'easeOut' },
           x: roomState?.isCheck ? { repeat: Infinity, duration: 0.25 } : { duration: 0.3 }
         }}
-        className="relative group p-3 rounded-3xl bg-slate-900/70 backdrop-blur-2xl border border-white/20 shadow-2xl shadow-cyan-500/10"
+        className="relative group p-2.5 sm:p-3 rounded-3xl bg-[#080E1B] backdrop-blur-2xl border border-white/15 shadow-2xl"
       >
-        {/* Active Game State Refraction Ring */}
-        <div
-          className={`absolute -inset-1 rounded-3xl blur-xl transition-all duration-500 ${
-            roomState?.isCheck
-              ? 'bg-red-600 animate-pulse opacity-90'
-              : roomState?.status === 'checkmate'
-              ? 'bg-amber-400 opacity-80 shadow-glow-gold'
-              : 'bg-gradient-to-r from-cyan-500 via-purple-600 to-indigo-500 opacity-30 group-hover:opacity-50'
-          }`}
-        />
-
-        {/* Scaled Chessboard Container for Zero-Scroll Fit */}
-        <div className="relative z-10 w-[280px] sm:w-[360px] md:w-[420px] lg:w-[460px] xl:w-[490px] aspect-square rounded-xl overflow-hidden shadow-2xl border border-white/20">
+        {/* Universal Tournament Chessboard Container */}
+        <div className="relative z-10 w-[240px] sm:w-[300px] md:w-[340px] lg:w-[380px] xl:w-[410px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10">
           <Chessboard
             position={roomState?.fen || 'start'}
             onPieceDrop={onPieceDrop}
             onSquareClick={handleSquareClick}
             boardOrientation={boardOrientation}
             customBoardStyle={{
-              borderRadius: '12px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)'
+              borderRadius: '16px',
+              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.75)'
             }}
             customDarkSquareStyle={{
-              backgroundColor: '#1e293b'
+              backgroundColor: '#1E293B'
             }}
             customLightSquareStyle={{
-              backgroundColor: '#475569'
+              backgroundColor: '#334155'
             }}
             customSquareStyles={customSquareStyles}
             animationDuration={220}
@@ -231,7 +220,7 @@ export const GlassChessboard: React.FC = () => {
                   <button
                     key={p.key}
                     onClick={() => handlePromotionChoice(p.key)}
-                    className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-cyan-500/30 border border-white/20 hover:border-cyan-400 text-2xl flex items-center justify-center transition-all transform hover:scale-110 shadow-glow-cyan"
+                    className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-cyan-500/30 border border-white/20 hover:border-cyan-400 text-2xl flex items-center justify-center transition-all transform hover:scale-110 shadow-glow-cyan cursor-pointer"
                   >
                     {p.icon}
                   </button>

@@ -5,6 +5,7 @@ import { useGameStore } from '../../store/useGameStore.js';
 import { emitCreateRoom } from '../../socket/socketClient.js';
 import { Sparkles, Clock, Crown, Dices, Users } from 'lucide-react';
 import { GameType } from '../../types/index.js';
+import { AVATAR_PRESETS, RenderAvatar } from '../ui/AvatarPack.js';
 
 export const CreateRoomModal: React.FC = () => {
   const isOpen = useGameStore((s) => s.showCreateModal);
@@ -39,8 +40,6 @@ export const CreateRoomModal: React.FC = () => {
       }
     }
   }, [selectedGameType, isOpen]);
-
-  const AVATARS = ['⚡', '👑', '🔥', '🐉', '❄️', '🎯', '🦁', '🚀'];
 
   const handleSelectMaxPlayers = (count: number) => {
     setMaxPlayers(count);
@@ -105,7 +104,6 @@ export const CreateRoomModal: React.FC = () => {
                   : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
               }`}
             >
-              <span>✂️</span>
               <span>RPS</span>
             </button>
           </div>
@@ -128,7 +126,7 @@ export const CreateRoomModal: React.FC = () => {
                     : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                 }`}
               >
-                👥 2 Players
+                2 Players
               </button>
 
               <button
@@ -140,36 +138,37 @@ export const CreateRoomModal: React.FC = () => {
                     : 'bg-white/5 border-white/10 text-gray-400 hover:text-white'
                 }`}
               >
-                👥👥 4 Players
+                4 Players
               </button>
             </div>
           </div>
         )}
 
-        {/* Name & Avatar Customization */}
+        {/* Name & Vector Avatar Pack Customization */}
         <div>
-          <label className="block text-xs font-semibold text-gray-300 mb-2">Player Name & Avatar</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-2">Player Name & Avatar Pack</label>
           <input
             type="text"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             placeholder="Enter your name"
-            className="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 mb-2"
+            className="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 mb-3"
           />
 
-          <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
-            {AVATARS.map((av) => (
+          <div className="grid grid-cols-6 gap-2">
+            {AVATAR_PRESETS.map((av) => (
               <button
-                key={av}
+                key={av.id}
                 type="button"
-                onClick={() => setPlayerAvatar(av)}
-                className={`w-8 h-8 rounded-xl border flex items-center justify-center text-sm transition-all ${
-                  playerAvatar === av
-                    ? 'bg-cyan-500/30 border-cyan-400 scale-105 shadow-glow-cyan'
-                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                title={av.name}
+                onClick={() => setPlayerAvatar(av.id)}
+                className={`p-0.5 rounded-2xl border flex items-center justify-center transition-all ${
+                  playerAvatar === av.id
+                    ? 'bg-cyan-500/40 border-cyan-300 scale-110 shadow-glow-cyan ring-2 ring-cyan-400/50'
+                    : 'bg-white/5 border-white/10 hover:bg-white/15 hover:scale-105'
                 }`}
               >
-                {av}
+                <RenderAvatar avatarId={av.id} className="w-9 h-9 rounded-xl" size={16} />
               </button>
             ))}
           </div>

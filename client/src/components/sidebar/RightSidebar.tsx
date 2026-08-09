@@ -6,9 +6,10 @@ import {
   emitRequestUndo,
   emitResign,
   emitRespondDraw,
-  emitRespondUndo
+  emitRespondUndo,
+  socket
 } from '../../socket/socketClient.js';
-import { MessageSquare, ScrollText, Settings, Flag, RefreshCw, Volume2, VolumeX, Music, Download, Send, UserCheck, Minimize2, Maximize2 } from 'lucide-react';
+import { MessageSquare, ScrollText, Settings, Flag, RefreshCw, Volume2, VolumeX, Music, Download, Send, UserCheck, Minimize2, Maximize2, AlertCircle } from 'lucide-react';
 import { MagneticButton } from '../ui/MagneticButton.js';
 import { soundEngine } from '../../audio/soundEngine.js';
 
@@ -16,6 +17,7 @@ export const RightSidebar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'history' | 'actions' | 'settings'>('chat');
   const [chatInput, setChatInput] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
+  const [localNotice, setLocalNotice] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const roomState = useGameStore((s) => s.roomState);
@@ -27,6 +29,19 @@ export const RightSidebar: React.FC = () => {
   const isLudo = roomState?.gameType === 'ludo';
   const isRPS = roomState?.gameType === 'rps';
 
+  const isOpponentDrawOffer = roomState?.pendingDrawOfferFrom && roomState.pendingDrawOfferFrom !== socket.id;
+  const isOpponentUndoRequest = roomState?.pendingUndoOfferFrom && roomState.pendingUndoOfferFrom !== socket.id;
+  const isPendingAction = isOpponentDrawOffer || isOpponentUndoRequest;
+
+  // Auto-switch to Actions tab & Auto-Expand when opponent offers a draw or requests an undo!
+  useEffect(() => {
+    if (isPendingAction) {
+      setActiveTab('actions');
+      setIsMinimized(false);
+      soundEngine.playTick();
+    }
+  }, [isPendingAction]);
+
   useEffect(() => {
     if ((isLudo || isRPS) && (activeTab === 'history' || activeTab === 'actions')) {
       setActiveTab('chat');
@@ -36,6 +51,26 @@ export const RightSidebar: React.FC = () => {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [roomState?.chatMessages.length]);
+
+  const handleOfferDraw = () => {
+    soundEngine.playClick();
+    if (!roomState || roomState.moveHistory.length === 0) {
+      setLocalNotice('⚠️ Cannot offer draw: No moves have been played yet!');
+      setTimeout(() => setLocalNotice(null), 3500);
+      return;
+    }
+    emitRequestDraw();
+  };
+
+  const handleRequestUndo = () => {
+    soundEngine.playClick();
+    if (!roomState || roomState.moveHistory.length === 0) {
+      setLocalNotice('⚠️ Cannot request undo: No moves have been played yet!');
+      setTimeout(() => setLocalNotice(null), 3500);
+      return;
+    }
+    emitRequestUndo();
+  };
 
   const handleSendChat = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -63,33 +98,59 @@ export const RightSidebar: React.FC = () => {
         { id: 'settings', label: 'Audio', icon: Settings }
       ];
 
+  // Minimized Pill Bar with Live Action Alerts
   if (isMinimized) {
     return (
-      <div className="w-full lg:w-88 xl:w-96 rounded-2xl bg-slate-900/80 backdrop-blur-2xl border border-white/15 p-3 flex items-center justify-between shadow-2xl transition-all">
-        <div className="flex items-center gap-2 text-cyan-300">
-          <MessageSquare size={16} />
-          <span className="text-xs font-bold text-white">Game Panel</span>
-          {roomState && (
-            <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-400/30">
-              {roomState.chatMessages.filter((m) => !m.isSystem).length} msgs
+      <div
+        className={`w-full lg:w-80 xl:w-96 p-2 px-4 rounded-full backdrop-blur-2xl border shadow-xl flex items-center justify-between gap-3 shrink-0 self-start transition-all ${
+          isPendingAction
+            ? 'bg-amber-500/25 border-amber-400 animate-pulse shadow-[0_0_20px_rgba(245,158,11,0.6)]'
+            : 'bg-[#0B1225]/90 border-cyan-400/30'
+        }`}
+      >
+        <div className="flex items-center gap-2 text-cyan-300 overflow-hidden">
+          <MessageSquare size={14} className="shrink-0" />
+          {isPendingAction ? (
+            <span className="text-xs font-mono font-bold text-amber-300 truncate animate-pulse">
+              {isOpponentDrawOffer ? '🤝 DRAW OFFERED!' : '↩️ UNDO REQUESTED!'}
             </span>
+          ) : (
+            <>
+              <span className="text-xs font-mono font-bold text-white tracking-wider truncate">
+                {roomState?.lastActionNotice || 'LIVE CHAT'}
+              </span>
+              {roomState && (
+                <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-400/30 font-mono font-bold shrink-0">
+                  {roomState.chatMessages.length} msgs
+                </span>
+              )}
+            </>
           )}
         </div>
         <button
-          onClick={() => { setIsMinimized(false); soundEngine.playClick(); }}
-          className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-300 transition-colors flex items-center gap-1 text-xs font-semibold"
+          onClick={() => {
+            setIsMinimized(false);
+            if (isPendingAction) setActiveTab('actions');
+            soundEngine.playClick();
+          }}
+          className={`px-3 py-1 rounded-full text-[11px] font-bold font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 shrink-0 cursor-pointer active:scale-95 shadow-sm ${
+            isPendingAction
+              ? 'bg-amber-400 text-slate-950 hover:bg-amber-300 font-extrabold shadow-glow-gold'
+              : 'bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/40'
+          }`}
         >
-          <Maximize2 size={13} />
-          <span>Expand Panel</span>
+          <Maximize2 size={12} />
+          <span>{isPendingAction ? 'VIEW REQUEST' : 'EXPAND PANEL'}</span>
         </button>
       </div>
     );
   }
 
+  // Expanded Panel with STRICT FIXED HEIGHT (Matching Chess Board Height)
   return (
-    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-full max-h-[500px] lg:max-h-full rounded-2xl sm:rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden transition-all">
+    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-[490px] max-h-[490px] rounded-2xl sm:rounded-3xl bg-[#0B1225]/90 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden shrink-0 transition-all">
       {/* Sidebar Navigation Tabs & Minimize Button */}
-      <div className="flex items-center justify-between border-b border-white/10 p-1.5 bg-black/20">
+      <div className="flex items-center justify-between border-b border-white/10 p-1.5 bg-black/20 shrink-0">
         <div className="flex flex-1 gap-1">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -98,7 +159,7 @@ export const RightSidebar: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id as any)}
-                className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-white/10 text-cyan-300 border border-cyan-400/30 shadow-glass-sm'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -115,18 +176,19 @@ export const RightSidebar: React.FC = () => {
         <button
           onClick={() => { setIsMinimized(true); soundEngine.playClick(); }}
           title="Minimize Sidebar"
-          className="ml-1 p-2 rounded-xl bg-white/5 hover:bg-white/15 text-gray-400 hover:text-cyan-300 transition-colors"
+          className="ml-1 p-2 rounded-xl bg-white/5 hover:bg-white/15 text-gray-400 hover:text-cyan-300 transition-colors cursor-pointer"
         >
           <Minimize2 size={13} />
         </button>
       </div>
 
-      {/* Tab Contents */}
-      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+      {/* Tab Contents Container with Scroll Boundaries */}
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 custom-scrollbar flex flex-col">
         {/* Chat Tab */}
         {activeTab === 'chat' && (
-          <div className="flex flex-col h-full justify-between gap-2">
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+          <div className="flex flex-col h-full justify-between gap-2 min-h-0">
+            {/* Scrollable Messages Area */}
+            <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
               {roomState?.chatMessages.map((msg) => (
                 <div
                   key={msg.id}
@@ -152,8 +214,8 @@ export const RightSidebar: React.FC = () => {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Quick Emojis & Chat Input */}
-            <div className="pt-2 border-t border-white/10 space-y-1.5">
+            {/* Quick Emojis & Chat Input Bar */}
+            <div className="pt-2 border-t border-white/10 space-y-1.5 shrink-0">
               <div className="flex gap-1 overflow-x-auto pb-0.5 custom-scrollbar">
                 {QUICK_EMOJIS.map((emoji) => (
                   <button
@@ -162,7 +224,7 @@ export const RightSidebar: React.FC = () => {
                       emitSendChat(emoji);
                       soundEngine.playClick();
                     }}
-                    className="p-1 rounded-lg bg-white/5 hover:bg-white/15 text-xs transition-transform hover:scale-110"
+                    className="p-1 rounded-lg bg-white/5 hover:bg-white/15 text-xs transition-transform hover:scale-110 cursor-pointer"
                   >
                     {emoji}
                   </button>
@@ -179,7 +241,7 @@ export const RightSidebar: React.FC = () => {
                 />
                 <button
                   type="submit"
-                  className="p-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-transform active:scale-95"
+                  className="p-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-transform active:scale-95 cursor-pointer"
                 >
                   <Send size={13} />
                 </button>
@@ -190,12 +252,12 @@ export const RightSidebar: React.FC = () => {
 
         {/* Move History Tab */}
         {activeTab === 'history' && (
-          <div className="space-y-3">
-            <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Move Log</h4>
+          <div className="flex flex-col h-full min-h-0 justify-between gap-3">
+            <h4 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1 shrink-0">Move Log</h4>
             {roomState?.moveHistory.length === 0 ? (
-              <p className="text-xs text-gray-500 italic text-center py-6">No moves made yet.</p>
+              <p className="text-xs text-gray-500 italic text-center py-6 flex-1">No moves made yet.</p>
             ) : (
-              <div className="grid grid-cols-2 gap-1.5 font-mono text-xs max-h-[360px] overflow-y-auto custom-scrollbar">
+              <div className="grid grid-cols-2 gap-1.5 font-mono text-xs flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                 {Array.from({ length: Math.ceil((roomState?.moveHistory.length || 0) / 2) }).map((_, i) => {
                   const whiteMove = roomState?.moveHistory[i * 2];
                   const blackMove = roomState?.moveHistory[i * 2 + 1];
@@ -214,7 +276,7 @@ export const RightSidebar: React.FC = () => {
               </div>
             )}
 
-            <div className="pt-2 border-t border-white/10">
+            <div className="pt-2 border-t border-white/10 shrink-0">
               <MagneticButton
                 onClick={() => setShowExportModal(true)}
                 variant="glass"
@@ -230,43 +292,65 @@ export const RightSidebar: React.FC = () => {
 
         {/* Actions Tab */}
         {activeTab === 'actions' && (
-          <div className="space-y-3 text-xs">
+          <div className="space-y-3 text-xs overflow-y-auto flex-1 min-h-0 custom-scrollbar">
+            {/* Validation Notice Card */}
+            {(localNotice || roomState?.lastActionNotice) && (
+              <div className="p-2.5 rounded-xl bg-cyan-950/80 border border-cyan-400/40 text-cyan-300 font-mono text-xs flex items-center gap-2">
+                <AlertCircle size={14} className="shrink-0 text-cyan-400" />
+                <span>{localNotice || roomState?.lastActionNotice}</span>
+              </div>
+            )}
+
+            {/* Draw Offer Card */}
             {roomState?.pendingDrawOfferFrom && (
-              <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 space-y-1.5">
-                <p className="font-semibold text-amber-300">Draw Offered by opponent!</p>
-                <div className="flex gap-2">
-                  <MagneticButton onClick={() => emitRespondDraw(true)} variant="gold" size="sm" className="flex-1">
-                    Accept
-                  </MagneticButton>
-                  <MagneticButton onClick={() => emitRespondDraw(false)} variant="glass" size="sm" className="flex-1">
-                    Decline
-                  </MagneticButton>
+              roomState.pendingDrawOfferFrom === socket.id ? (
+                <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-semibold font-mono text-center text-xs">
+                  🤝 Draw Offered — Waiting for opponent response...
                 </div>
-              </div>
+              ) : (
+                <div className="p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 space-y-1.5">
+                  <p className="font-semibold text-amber-300 font-mono">🤝 Draw Offered by opponent!</p>
+                  <div className="flex gap-2">
+                    <MagneticButton onClick={() => emitRespondDraw(true)} variant="gold" size="sm" className="flex-1">
+                      Accept
+                    </MagneticButton>
+                    <MagneticButton onClick={() => emitRespondDraw(false)} variant="glass" size="sm" className="flex-1">
+                      Decline
+                    </MagneticButton>
+                  </div>
+                </div>
+              )
             )}
 
+            {/* Undo Request Card */}
             {roomState?.pendingUndoOfferFrom && (
-              <div className="p-2.5 rounded-xl bg-purple-500/20 border border-purple-400/40 space-y-1.5">
-                <p className="font-semibold text-purple-300">Undo Move Requested!</p>
-                <div className="flex gap-2">
-                  <MagneticButton onClick={() => emitRespondUndo(true)} variant="secondary" size="sm" className="flex-1">
-                    Allow
-                  </MagneticButton>
-                  <MagneticButton onClick={() => emitRespondUndo(false)} variant="glass" size="sm" className="flex-1">
-                    Refuse
-                  </MagneticButton>
+              roomState.pendingUndoOfferFrom === socket.id ? (
+                <div className="p-2.5 rounded-xl bg-purple-500/20 border border-purple-400/40 text-purple-300 font-semibold font-mono text-center text-xs">
+                  ↩️ Undo Requested — Waiting for opponent response...
                 </div>
-              </div>
+              ) : (
+                <div className="p-2.5 rounded-xl bg-purple-500/20 border border-purple-400/40 space-y-1.5">
+                  <p className="font-semibold text-purple-300 font-mono">↩️ Undo Move Requested!</p>
+                  <div className="flex gap-2">
+                    <MagneticButton onClick={() => emitRespondUndo(true)} variant="secondary" size="sm" className="flex-1">
+                      Allow
+                    </MagneticButton>
+                    <MagneticButton onClick={() => emitRespondUndo(false)} variant="glass" size="sm" className="flex-1">
+                      Refuse
+                    </MagneticButton>
+                  </div>
+                </div>
+              )
             )}
 
-            {userRole === 'player' && roomState?.status === 'playing' && (
+            {userRole === 'player' && (roomState?.status === 'playing' || roomState?.status === 'waiting') && (
               <div className="space-y-2">
-                <MagneticButton onClick={() => emitRequestDraw()} variant="glass" size="sm" className="w-full justify-start">
+                <MagneticButton onClick={handleOfferDraw} variant="glass" size="sm" className="w-full justify-start">
                   <RefreshCw size={13} />
                   <span>Offer Draw</span>
                 </MagneticButton>
 
-                <MagneticButton onClick={() => emitRequestUndo()} variant="glass" size="sm" className="w-full justify-start">
+                <MagneticButton onClick={handleRequestUndo} variant="glass" size="sm" className="w-full justify-start">
                   <ScrollText size={13} />
                   <span>Request Undo</span>
                 </MagneticButton>
@@ -298,7 +382,7 @@ export const RightSidebar: React.FC = () => {
 
         {/* Settings Tab */}
         {activeTab === 'settings' && (
-          <div className="space-y-4 text-xs text-gray-300">
+          <div className="space-y-4 text-xs text-gray-300 overflow-y-auto flex-1 min-h-0 custom-scrollbar">
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-2">
                 {audioSettings.isMuted ? <VolumeX className="text-red-400" size={15} /> : <Volume2 className="text-cyan-400" size={15} />}

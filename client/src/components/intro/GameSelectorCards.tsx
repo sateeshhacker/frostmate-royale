@@ -66,7 +66,7 @@ export const GameSelectorCards: React.FC<GameSelectorCardsProps> = ({
       <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-6 gap-4">
         <div>
           <span className="text-xs font-mono uppercase tracking-widest text-[#22D3EE] font-bold">
-            // COMPACT ARENA SELECTOR
+            MULTIPLAYER ARENAS
           </span>
           <h2 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-[#F8FAFC] mt-1">
             CHOOSE YOUR ARENA

@@ -16,19 +16,16 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({ onPlayNow, onOpenJ
       <header className="fixed top-0 left-0 right-0 z-50 h-[72px] px-4 sm:px-8 bg-[#050816]/85 backdrop-blur-xl border-b border-white/10 flex items-center transition-all select-none">
         <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between">
           
-          {/* Left: Brand Logo */}
+          {/* Left: Clean Brand Logo */}
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-2.5 group"
+            className="flex items-center gap-2 group"
           >
-            <div className="w-8 h-8 rounded-xl bg-cyan-400/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-black text-sm group-hover:scale-105 transition-transform shadow-glow-cyan">
-              ⚡
-            </div>
-            <span className="font-display font-black text-lg tracking-wider text-white group-hover:text-cyan-300 transition-colors">
+            <span className="font-display font-black text-xl tracking-wider text-white group-hover:text-cyan-300 transition-colors">
               FROSTMATE ROYALE
             </span>
           </a>

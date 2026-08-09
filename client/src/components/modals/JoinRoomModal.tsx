@@ -5,6 +5,7 @@ import { useGameStore } from '../../store/useGameStore.js';
 import { emitJoinRoom } from '../../socket/socketClient.js';
 import { LogIn, Clipboard, History } from 'lucide-react';
 import { soundEngine } from '../../audio/soundEngine.js';
+import { AVATAR_PRESETS, RenderAvatar } from '../ui/AvatarPack.js';
 
 export const JoinRoomModal: React.FC = () => {
   const isOpen = useGameStore((s) => s.showJoinModal);
@@ -40,7 +41,6 @@ export const JoinRoomModal: React.FC = () => {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        // Strip trailing URL parameters if full link was pasted
         const clean = text.trim().toUpperCase().replace(/.*ROOM=/, '').substring(0, 6);
         setRoomCode(clean);
         soundEngine.playClick();
@@ -58,7 +58,6 @@ export const JoinRoomModal: React.FC = () => {
 
     setLastError(null);
 
-    // Save to recent rooms
     const updated = [code, ...recentRooms.filter((c) => c !== code)].slice(0, 4);
     setRecentRooms(updated);
     localStorage.setItem('fm_recent_rooms', JSON.stringify(updated));
@@ -66,34 +65,33 @@ export const JoinRoomModal: React.FC = () => {
     emitJoinRoom(code);
   };
 
-  const AVATARS = ['👑', '⚡', '🔥', '🐉', '❄️', '🎯', '🦁', '🚀'];
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Join Room">
       <div className="space-y-5">
-        {/* Name & Avatar Customization */}
+        {/* Name & Vector Avatar Pack Customization */}
         <div>
-          <label className="block text-xs font-semibold text-gray-300 mb-2">Your Player Name</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-2">Your Player Name & Avatar Pack</label>
           <input
             type="text"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
             placeholder="Enter your name"
-            className="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400 mb-2"
+            className="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-400 mb-3"
           />
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {AVATARS.map((av) => (
+          <div className="grid grid-cols-6 gap-2">
+            {AVATAR_PRESETS.map((av) => (
               <button
-                key={av}
+                key={av.id}
                 type="button"
-                onClick={() => setPlayerAvatar(av)}
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center text-lg transition-all ${
-                  playerAvatar === av
-                    ? 'bg-purple-500/30 border-purple-400 scale-105 shadow-glow-purple'
-                    : 'bg-white/5 border-white/10 hover:bg-white/10'
+                title={av.name}
+                onClick={() => setPlayerAvatar(av.id)}
+                className={`p-0.5 rounded-2xl border flex items-center justify-center transition-all ${
+                  playerAvatar === av.id
+                    ? 'bg-purple-500/40 border-purple-300 scale-110 shadow-glow-purple ring-2 ring-purple-400/50'
+                    : 'bg-white/5 border-white/10 hover:bg-white/15 hover:scale-105'
                 }`}
               >
-                {av}
+                <RenderAvatar avatarId={av.id} className="w-9 h-9 rounded-xl" size={16} />
               </button>
             ))}
           </div>

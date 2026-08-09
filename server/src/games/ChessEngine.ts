@@ -11,6 +11,12 @@ export class ChessEngine implements IGameEngine {
   }
 
   public makeMove(payload: { from: string; to: string; promotion?: string }): ActionResult {
+    if (this.room.status === 'checkmate' || this.room.status === 'draw' || this.room.status === 'timeout' || this.room.status === 'abandoned') {
+      return { success: false, error: 'Game is over' };
+    }
+    if (this.room.status === 'waiting') {
+      this.room.status = 'playing';
+    }
     try {
       const moveResult = this.chess.move({
         from: payload.from,
