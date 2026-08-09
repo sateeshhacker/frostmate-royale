@@ -20,7 +20,7 @@ export const GamePage: React.FC = () => {
 
   if (!roomState) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 text-center text-white bg-slate-950">
+      <div className="h-screen w-screen flex flex-col items-center justify-center p-6 text-center text-white bg-slate-950">
         <div className="p-8 rounded-3xl bg-slate-900/80 backdrop-blur-2xl border border-white/15 shadow-2xl max-w-md space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-2xl mx-auto">
             🎲
@@ -49,15 +49,15 @@ export const GamePage: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen lg:h-screen lg:max-h-screen w-full overflow-y-auto lg:overflow-hidden flex flex-col justify-between p-3 md:p-5 text-white z-10 select-none custom-scrollbar">
+    <div className="relative h-screen max-h-screen w-screen max-w-full overflow-hidden flex flex-col justify-between p-2 sm:p-4 text-white z-10 select-none">
       <VictoryOverlay />
       <ExportModal />
       <DisconnectBanner />
 
-      {/* Top Navbar */}
-      <header className="flex items-center justify-between w-full max-w-7xl mx-auto py-1.5 px-4 rounded-xl bg-slate-900/60 backdrop-blur-xl border border-white/15 shadow-lg mb-1 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-xs shadow-glow-cyan">
+      {/* Universal Top Navbar */}
+      <header className="flex items-center justify-between w-full max-w-7xl mx-auto py-1 px-3 sm:px-4 rounded-xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-lg mb-2 shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 to-purple-600 flex items-center justify-center font-bold text-xs shadow-glow-cyan">
             {isRPS ? '✂️' : isLudo ? '🎲' : '👑'}
           </div>
           <span className="font-display font-black text-xs tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-300 hidden sm:inline">
@@ -92,17 +92,17 @@ export const GamePage: React.FC = () => {
         </button>
       </header>
 
-      {/* Main Board & Sidebar Layout */}
-      <main className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-4 max-w-7xl mx-auto w-full my-auto">
-        {/* Left Side: Board Container */}
-        <div className="flex-1 flex flex-col items-center justify-center w-full my-auto">
+      {/* Universal Main Board & Sidebar Layout (Zero Vertical Overflow) */}
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-between gap-3 max-w-7xl mx-auto w-full overflow-hidden">
+        {/* Left Side: Game Board Container */}
+        <div className="flex-1 min-h-0 h-full w-full flex flex-col items-center justify-center overflow-hidden">
           {!isLudo && !isRPS && <TopPlayerBar />}
           {isRPS ? <RPSGame /> : isLudo ? <GlassLudoBoard /> : <GlassChessboard />}
           {!isLudo && !isRPS && <BottomPlayerBar />}
         </div>
 
         {/* Right Side: Interactive Sidebar */}
-        <div className="w-full lg:w-auto flex justify-center shrink-0 my-auto">
+        <div className="w-full lg:w-auto h-full max-h-full flex justify-center shrink-0 overflow-hidden">
           <RightSidebar />
         </div>
       </main>

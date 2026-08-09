@@ -87,7 +87,7 @@ export const RightSidebar: React.FC = () => {
   }
 
   return (
-    <div className="w-full lg:w-88 xl:w-96 flex flex-col h-[460px] md:h-[500px] lg:h-[540px] xl:h-[560px] rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden transition-all">
+    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-full max-h-[500px] lg:max-h-full rounded-2xl sm:rounded-3xl bg-slate-900/60 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden transition-all">
       {/* Sidebar Navigation Tabs & Minimize Button */}
       <div className="flex items-center justify-between border-b border-white/10 p-1.5 bg-black/20">
         <div className="flex flex-1 gap-1">

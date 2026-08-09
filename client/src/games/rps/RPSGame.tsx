@@ -6,7 +6,6 @@ import { useRPSGameState } from './state/useRPSGameState.js';
 import { RPSArenaCanvas } from './arena/RPSArenaCanvas.js';
 import { RPSScoreboard } from './ui/RPSScoreboard.js';
 import { RPSControls } from './ui/RPSControls.js';
-import { RPSFallback } from './ui/RPSFallback.js';
 
 export const RPSGame: React.FC = () => {
   const roomState = useGameStore((s) => s.roomState);
@@ -49,12 +48,12 @@ export const RPSGame: React.FC = () => {
   const isGameOver = phase === 'MATCH_COMPLETE';
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto p-4 sm:p-8 rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none">
+    <div className="relative w-full h-full max-h-full flex flex-col justify-between p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none">
       
       {/* Background Soft Atmospheric Lighting */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#111A30]/40 via-transparent to-[#030611]/80 pointer-events-none" />
 
-      {/* 1. Header: Scoreboard & Match Goal */}
+      {/* 1. Header: High-Visibility Scoreboard & Match Goal */}
       <RPSScoreboard
         playerScore={playerScore}
         opponentScore={opponentScore}
@@ -64,8 +63,8 @@ export const RPSGame: React.FC = () => {
         phase={phase}
       />
 
-      {/* 2. Center: 3D RPS Arena Stage with Explicit Fixed Height */}
-      <div className="relative z-10 w-full h-[320px] sm:h-[360px] my-4 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
+      {/* 2. Center: Universal Responsive 3D RPS Arena Stage */}
+      <div className="relative z-10 w-full flex-1 min-h-[160px] sm:min-h-[220px] max-h-[340px] my-2 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
         <RPSArenaCanvas
           playerChoice={playerChoice}
           opponentChoice={opponentChoice}
@@ -82,7 +81,7 @@ export const RPSGame: React.FC = () => {
               animate={{ scale: 1.4, opacity: 1 }}
               exit={{ scale: 2, opacity: 0 }}
               transition={{ duration: 0.35, type: 'spring' }}
-              className="absolute z-30 text-4xl sm:text-6xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] via-white to-[#FF5F6D] drop-shadow-2xl uppercase"
+              className="absolute z-30 text-3xl sm:text-5xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] via-white to-[#FF5F6D] drop-shadow-2xl uppercase"
             >
               {countdownSequenceText}
             </motion.div>
@@ -91,11 +90,11 @@ export const RPSGame: React.FC = () => {
 
         {/* Outcome Toast Banner Floating Over 3D Arena */}
         {!countdownSequenceText && (phase === 'REVEAL' || phase === 'RESULT') && roundOutcome && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
             <motion.div
               initial={{ y: 20, opacity: 0, scale: 0.9 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              className={`px-6 py-2.5 rounded-full text-xs font-black tracking-wider uppercase border shadow-2xl backdrop-blur-xl ${
+              className={`px-5 py-2 rounded-full text-xs font-black tracking-wider uppercase border shadow-2xl backdrop-blur-xl ${
                 roundOutcome === 'win'
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-glow-cyan'
                   : roundOutcome === 'lose'
@@ -122,11 +121,11 @@ export const RPSGame: React.FC = () => {
         <div className="absolute inset-0 z-40 bg-[#030611]/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center space-y-4">
           {opponentHasLeft ? (
             <>
-              <div className="w-16 h-16 rounded-3xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-4xl shadow-glow-cyan">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-3xl shadow-glow-cyan">
                 🚪
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black font-display text-[#F8FAFC] uppercase tracking-wider">
+              <h3 className="text-xl sm:text-2xl font-black font-display text-[#F8FAFC] uppercase tracking-wider">
                 OPPONENT HAS LEFT THE ARENA
               </h3>
 
@@ -136,7 +135,7 @@ export const RPSGame: React.FC = () => {
 
               <button
                 onClick={actions.handleExitToHome}
-                className="mt-2 px-8 py-3 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-amber-500 to-red-600 hover:scale-105 active:scale-95 text-white shadow-glow-cyan cursor-pointer"
+                className="mt-2 px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 bg-gradient-to-r from-amber-500 to-red-600 hover:scale-105 active:scale-95 text-white shadow-glow-cyan cursor-pointer"
               >
                 <LogOut size={14} />
                 <span>RETURN TO HOME LAUNCHER</span>
@@ -144,11 +143,11 @@ export const RPSGame: React.FC = () => {
             </>
           ) : (
             <>
-              <div className="w-16 h-16 rounded-3xl bg-[#FF5F6D]/20 border border-[#FF5F6D]/50 flex items-center justify-center text-4xl shadow-glow-cyan">
+              <div className="w-14 h-14 rounded-2xl bg-[#FF5F6D]/20 border border-[#FF5F6D]/50 flex items-center justify-center text-3xl shadow-glow-cyan">
                 {playerScore >= targetPoints ? '🏆' : '💀'}
               </div>
 
-              <h3 className="text-3xl font-black font-display text-[#F8FAFC] uppercase tracking-wider">
+              <h3 className="text-2xl sm:text-3xl font-black font-display text-[#F8FAFC] uppercase tracking-wider">
                 {playerScore >= targetPoints ? `VICTORY! REACHED ${targetPoints} POINTS` : 'GAME OVER! OPPONENT WINS MATCH'}
               </h3>
 
@@ -157,7 +156,7 @@ export const RPSGame: React.FC = () => {
               </p>
 
               {/* Dual Rematch Status */}
-              <div className="flex items-center justify-center gap-4 py-2">
+              <div className="flex items-center justify-center gap-3 py-1">
                 <div className={`px-3 py-1 rounded-full border text-xs font-mono font-bold flex items-center gap-1.5 ${
                   myRematchAgreed ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300' : 'bg-white/5 border-white/10 text-gray-400'
                 }`}>
@@ -174,11 +173,11 @@ export const RPSGame: React.FC = () => {
               </div>
 
               {/* Action Buttons: START NEW MATCH vs EXIT TO HOME PAGE */}
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
                 <button
                   disabled={myRematchAgreed}
                   onClick={actions.handleRequestRematch}
-                  className={`px-6 py-3 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all ${
+                  className={`px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 transition-all ${
                     myRematchAgreed
                       ? 'bg-emerald-500/20 text-gray-400 border border-white/10 cursor-not-allowed'
                       : 'bg-gradient-to-r from-[#FF5F6D] to-purple-600 hover:scale-105 active:scale-95 text-white shadow-glow-cyan'
@@ -192,7 +191,7 @@ export const RPSGame: React.FC = () => {
 
                 <button
                   onClick={actions.handleExitToHome}
-                  className="px-6 py-3 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 bg-white/10 hover:bg-red-500/20 border border-white/20 hover:border-red-400/40 text-gray-200 hover:text-red-300 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                  className="px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-wider flex items-center gap-2 bg-white/10 hover:bg-red-500/20 border border-white/20 hover:border-red-400/40 text-gray-200 hover:text-red-300 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                 >
                   <LogOut size={14} />
                   <span>EXIT TO HOME PAGE</span>

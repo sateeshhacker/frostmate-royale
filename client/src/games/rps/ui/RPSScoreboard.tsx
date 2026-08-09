@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, ShieldCheck } from 'lucide-react';
+import { Clock, ShieldCheck, Trophy, Zap } from 'lucide-react';
 import { RPSGamePhase } from '../state/useRPSGameState.js';
 
 interface RPSScoreboardProps {
@@ -22,33 +22,48 @@ export const RPSScoreboard: React.FC<RPSScoreboardProps> = ({
   const isTurnTimerActive = phase === 'CHOOSING' || phase === 'PLAYER_LOCKED';
 
   return (
-    <div className="w-full space-y-3 select-none">
-      {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
-        <div>
+    <div className="w-full shrink-0 space-y-2 select-none">
+      {/* Universal Responsive Header & Scoreboard Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-white/15">
+        {/* Left Title & Round Match Info */}
+        <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono font-bold text-[#FF5F6D] uppercase tracking-widest">
-              ROUND {roundCount} • FIRST TO {targetPoints} POINTS
+            <span className="px-2 py-0.5 rounded-full bg-[#FF5F6D]/20 border border-[#FF5F6D]/40 text-[10px] font-mono font-extrabold text-[#FF5F6D] uppercase tracking-wider">
+              ROUND {roundCount}
+            </span>
+            <span className="text-[10px] font-mono font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">
+              • GOAL: {targetPoints} PTS
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black font-display text-[#F8FAFC]">
+          <h2 className="text-base sm:text-xl font-black font-display text-[#F8FAFC] tracking-wide mt-0.5">
             ROCK PAPER SCISSORS ROYALE
           </h2>
         </div>
 
-        {/* Score Tally Panel */}
-        <div className="flex items-center gap-6 bg-[#0B1224] px-5 py-2.5 rounded-2xl border border-white/10 shadow-lg">
-          <div className="text-center">
-            <span className="text-[10px] font-mono uppercase text-[#38bdf8] font-bold block">YOU</span>
-            <span className="text-2xl font-black text-[#F8FAFC]">{playerScore}</span>
+        {/* Right High-Visibility Crystal Clear Score Tally Box */}
+        <div className="flex items-center gap-4 bg-[#070B18]/90 px-4 py-1.5 rounded-2xl border border-cyan-400/30 shadow-glow-cyan">
+          {/* YOU SCORE */}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col text-right">
+              <span className="text-[9px] font-mono uppercase text-[#38bdf8] font-black tracking-widest leading-none">YOU</span>
+              <span className="text-xs text-gray-400 font-mono font-bold">PLAYER 1</span>
+            </div>
+            <span className="text-2xl sm:text-3xl font-black font-display text-white drop-shadow-md">{playerScore}</span>
           </div>
-          <div className="text-center px-1">
-            <span className="text-[10px] font-mono uppercase text-gray-500 font-bold block">GOAL</span>
-            <span className="text-xs font-bold text-[#FF5F6D]">{targetPoints} PTS</span>
+
+          {/* VS / TARGET BADGE */}
+          <div className="flex flex-col items-center px-1 border-x border-white/10">
+            <span className="text-[9px] font-mono uppercase text-amber-400 font-bold tracking-wider">GOAL</span>
+            <span className="text-[11px] font-mono font-black text-[#FF5F6D]">{targetPoints} PTS</span>
           </div>
-          <div className="text-center">
-            <span className="text-[10px] font-mono uppercase text-[#FF5F6D] font-bold block">OPPONENT</span>
-            <span className="text-2xl font-black text-[#F8FAFC]">{opponentScore}</span>
+
+          {/* OPPONENT SCORE */}
+          <div className="flex items-center gap-2">
+            <span className="text-2xl sm:text-3xl font-black font-display text-white drop-shadow-md">{opponentScore}</span>
+            <div className="flex flex-col text-left">
+              <span className="text-[9px] font-mono uppercase text-[#FF5F6D] font-black tracking-widest leading-none">OPPONENT</span>
+              <span className="text-xs text-gray-400 font-mono font-bold">PLAYER 2</span>
+            </div>
           </div>
         </div>
       </div>
@@ -56,21 +71,21 @@ export const RPSScoreboard: React.FC<RPSScoreboardProps> = ({
       {/* 10-Second Per-Round Turn Timer Progress Bar */}
       {isTurnTimerActive && (
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs font-mono text-gray-400">
+          <div className="flex items-center justify-between text-[11px] font-mono text-gray-400">
             <span className="flex items-center gap-1.5 text-[#FF5F6D] font-bold uppercase">
               {phase === 'PLAYER_LOCKED' ? (
                 <>
-                  <ShieldCheck size={13} className="text-emerald-400" />
+                  <ShieldCheck size={12} className="text-emerald-400" />
                   <span className="text-emerald-400">MOVE LOCKED (CONCLUDES AT 0s)</span>
                 </>
               ) : (
                 <>
-                  <Clock size={13} />
+                  <Clock size={12} />
                   <span>SELECT MOVE TIMER</span>
                 </>
               )}
             </span>
-            <span className={`font-bold font-mono ${timerSeconds <= 3 ? 'text-red-400 animate-pulse' : 'text-[#38bdf8]'}`}>
+            <span className={`font-black font-mono text-xs ${timerSeconds <= 3 ? 'text-red-400 animate-pulse' : 'text-[#38bdf8]'}`}>
               {timerSeconds}s
             </span>
           </div>
