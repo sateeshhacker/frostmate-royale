@@ -102,6 +102,11 @@ export function registerSocketHandlers(io: Server, roomManager: RoomManager) {
               io.to(roomCode).emit('game_started');
               if (entry.ludoManager) entry.ludoManager.startTurnTimer();
             }
+          } else if (s.gameType === 'rps') {
+            if (s.whitePlayer && s.blackPlayer) {
+              s.status = 'playing';
+              io.to(roomCode).emit('game_started');
+            }
           } else if (s.whitePlayer && s.blackPlayer) {
             s.status = 'playing';
             io.to(roomCode).emit('game_started');

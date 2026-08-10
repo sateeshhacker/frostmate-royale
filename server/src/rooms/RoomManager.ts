@@ -172,7 +172,7 @@ export class RoomManager {
         avatar: avatar || (assignedColor === 'w' ? '⚡' : '👑'),
         color: assignedColor,
         connected: true,
-        timeRemainingMs: state.timeControlSeconds * 1000
+        timeRemainingMs: state.gameType === 'rps' ? 600000 : state.timeControlSeconds * 1000
       };
 
       if (assignedColor === 'w') state.whitePlayer = player;
