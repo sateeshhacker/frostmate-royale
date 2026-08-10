@@ -353,6 +353,16 @@ export function registerSocketHandlers(io: Server, roomManager: RoomManager) {
       const entry = roomManager.getRoom(roomCode);
       if (!entry) return;
 
+      const whiteConnected = Boolean(entry.state.whitePlayer && entry.state.whitePlayer.connected && io.sockets.sockets.get(entry.state.whitePlayer.id)?.connected);
+      const blackConnected = Boolean(entry.state.blackPlayer && entry.state.blackPlayer.connected && io.sockets.sockets.get(entry.state.blackPlayer.id)?.connected);
+
+      // If opponent left or disconnected, notify player immediately instead of restarting match solo
+      if (!whiteConnected || !blackConnected) {
+        entry.state.opponentLeft = true;
+        io.to(roomCode).emit('room_state_updated', entry.state);
+        return;
+      }
+
       if (!entry.state.rematchRequestedBy) {
         entry.state.rematchRequestedBy = [];
       }
@@ -361,12 +371,8 @@ export function registerSocketHandlers(io: Server, roomManager: RoomManager) {
         entry.state.rematchRequestedBy.push(socket.id);
       }
 
-      const connectedPlayerSockets = [
-        entry.state.whitePlayer?.id,
-        entry.state.blackPlayer?.id
-      ].filter((id) => id && io.sockets.sockets.get(id)?.connected);
-
-      if (connectedPlayerSockets.length <= 1 || entry.state.rematchRequestedBy.length >= connectedPlayerSockets.length) {
+      // Both connected players must agree to restart
+      if (entry.state.rematchRequestedBy.length >= 2) {
         entry.state.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
         entry.state.turn = 'w';
         entry.state.status = 'playing';

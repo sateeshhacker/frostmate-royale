@@ -121,7 +121,7 @@ export const RightSidebar: React.FC = () => {
               </span>
               {roomState && (
                 <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-400/30 font-mono font-bold shrink-0">
-                  {roomState.chatMessages.length} msgs
+                  {roomState.chatMessages.filter((m) => !m.isSystem).length} msgs
                 </span>
               )}
             </>
@@ -146,9 +146,9 @@ export const RightSidebar: React.FC = () => {
     );
   }
 
-  // Expanded Panel with STRICT FIXED HEIGHT (Matching Chess Board Height)
+  // Expanded Panel with Dynamic Viewport Height (Auto-Scales on Ctrl+ / Ctrl-)
   return (
-    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-[490px] max-h-[490px] rounded-2xl sm:rounded-3xl bg-[#0B1225]/90 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden shrink-0 transition-all">
+    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-[clamp(300px,76dvh,580px)] rounded-2xl sm:rounded-3xl bg-[#0B1225]/90 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden shrink-0 transition-all">
       {/* Sidebar Navigation Tabs & Minimize Button */}
       <div className="flex items-center justify-between border-b border-white/10 p-1.5 bg-black/20 shrink-0">
         <div className="flex flex-1 gap-1">

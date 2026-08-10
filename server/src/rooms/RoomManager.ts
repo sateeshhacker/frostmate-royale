@@ -229,6 +229,14 @@ export class RoomManager {
               actionText: `🚪 ${disconnectedName} (${col.toUpperCase()}) left. Tokens invalidated.`,
               timestamp: Date.now()
             });
+            state.chatMessages.push({
+              id: `sys-left-${Date.now()}-${col}`,
+              senderId: 'system',
+              senderName: 'System',
+              text: `🚪 ${disconnectedName} (${col.toUpperCase()} Player) has left the game. Their tokens have been invalidated and returned to base.`,
+              timestamp: Date.now(),
+              isSystem: true
+            });
           }
         });
       }

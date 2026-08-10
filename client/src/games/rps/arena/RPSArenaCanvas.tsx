@@ -53,7 +53,7 @@ export const RPSArenaCanvas: React.FC<RPSArenaCanvasProps> = ({
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(0, 0, 5.0);
+    camera.position.set(0, 0.25, 5.6);
     cameraRef.current = camera;
 
     // 2. WebGL Renderer with sRGB Color Management & Capped Pixel Ratio
@@ -325,7 +325,7 @@ export const RPSArenaCanvas: React.FC<RPSArenaCanvasProps> = ({
     <div className="w-full h-full relative pointer-events-none select-none overflow-hidden z-0">
       {/* Background Soft Coral Atmosphere Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] rounded-full bg-[#ff5f6d]/15 blur-[120px] pointer-events-none" />
-      <div ref={containerRef} className="w-full h-full min-h-[300px]" />
+      <div ref={containerRef} className="w-full h-full min-h-[200px]" />
     </div>
   );
 };

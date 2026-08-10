@@ -48,7 +48,7 @@ export const RPSGame: React.FC = () => {
   const isGameOver = phase === 'MATCH_COMPLETE';
 
   return (
-    <div className="relative w-full h-full max-h-full flex flex-col justify-between p-3 sm:p-5 rounded-2xl sm:rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none">
+    <div className="relative w-full max-w-4xl h-[clamp(300px,76dvh,580px)] flex flex-col justify-between p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none my-auto">
       
       {/* Background Soft Atmospheric Lighting */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#111A30]/40 via-transparent to-[#030611]/80 pointer-events-none" />
@@ -64,7 +64,7 @@ export const RPSGame: React.FC = () => {
       />
 
       {/* 2. Center: Universal Responsive 3D RPS Arena Stage */}
-      <div className="relative z-10 w-full flex-1 min-h-[160px] sm:min-h-[220px] max-h-[340px] my-2 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
+      <div className="relative z-10 w-full flex-1 min-h-[220px] sm:min-h-[260px] my-2 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
         <RPSArenaCanvas
           playerChoice={playerChoice}
           opponentChoice={opponentChoice}

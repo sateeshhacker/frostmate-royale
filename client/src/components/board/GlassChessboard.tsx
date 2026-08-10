@@ -178,10 +178,10 @@ export const GlassChessboard: React.FC = () => {
           scale: { duration: 0.8, ease: 'easeOut' },
           x: roomState?.isCheck ? { repeat: Infinity, duration: 0.25 } : { duration: 0.3 }
         }}
-        className="relative group p-2.5 sm:p-3 rounded-3xl bg-[#080E1B] backdrop-blur-2xl border border-white/15 shadow-2xl"
+        className="relative group p-2 sm:p-2.5 rounded-3xl bg-[#080E1B] backdrop-blur-2xl border border-white/15 shadow-2xl flex items-center justify-center"
       >
-        {/* Universal Tournament Chessboard Container */}
-        <div className="relative z-10 w-[240px] sm:w-[300px] md:w-[340px] lg:w-[380px] xl:w-[410px] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+        {/* Universal Tournament Chessboard Container (Modern Fluid Auto-Scaling) */}
+        <div className="relative z-10 w-[clamp(260px,58dvh,540px)] h-[clamp(260px,58dvh,540px)] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
           <Chessboard
             position={roomState?.fen || 'start'}
             onPieceDrop={onPieceDrop}

@@ -84,14 +84,16 @@ const StickmanTokenFigure: React.FC<{
   isMoving?: boolean;
   isCaptured?: boolean;
   isAtHome?: boolean;
-}> = memo(({ color, id, isSelected, isMoving, isCaptured, isAtHome }) => {
+  isDisconnected?: boolean;
+}> = memo(({ color, id, isSelected, isMoving, isCaptured, isAtHome, isDisconnected }) => {
   const colorSchemes = {
     red:    { main: '#ef4444', dark: '#991b1b', light: '#fca5a5', glow: 'rgba(239,68,68,0.7)', stroke: '#ffffff' },
     green:  { main: '#10b981', dark: '#047857', light: '#6ee7b7', glow: 'rgba(16,185,129,0.7)', stroke: '#ffffff' },
     yellow: { main: '#f59e0b', dark: '#b45309', light: '#fde68a', glow: 'rgba(245,158,11,0.7)', stroke: '#ffffff' },
     blue:   { main: '#3b82f6', dark: '#1d4ed8', light: '#93c5fd', glow: 'rgba(59,130,246,0.7)', stroke: '#ffffff' }
   };
-  const scheme = colorSchemes[color] || colorSchemes.red;
+  const ghostScheme = { main: '#64748b', dark: '#334155', light: '#94a3b8', glow: 'transparent', stroke: '#475569' };
+  const scheme = isDisconnected ? ghostScheme : (colorSchemes[color] || colorSchemes.red);
 
   // Orient stickmen towards their active board path: Red & Blue face Right (1), Yellow & Green face Left (-1)
   const baseFacing = { red: 1, green: -1, yellow: -1, blue: 1 }[color] || 1;
@@ -100,7 +102,7 @@ const StickmanTokenFigure: React.FC<{
   const isWalking = isMoving || isCaptured;
 
   // GLOW RULE: Glowing effect is ONLY ON at Home Base OR when it's the token's turn and selectable!
-  const showGlow = isSelected || isAtHome;
+  const showGlow = !isDisconnected && (isSelected || isAtHome);
 
   return (
     <div className="relative flex flex-col items-center justify-center">
@@ -225,11 +227,11 @@ const SpiderEmblem: React.FC<{ fillColor: string }> = ({ fillColor }) => (
 );
 
 // ─── Layer 1: Static board ───────────────────────────────────────────
-const StaticBoard = memo(({ is2P, currentTurn }: { is2P: boolean; currentTurn: LudoColor }) => (
+const StaticBoard = memo(({ is2P, currentTurn, disconnectedMap }: { is2P: boolean; currentTurn: LudoColor; disconnectedMap?: Record<LudoColor, boolean> }) => (
   <div className="absolute inset-2 bg-slate-950/90" style={GRID_STYLE}>
     
     {/* ─── Red Spider Base ─── */}
-    <div style={{gridRow:'1/7',gridColumn:'1/7'}} className="rounded-2xl bg-slate-950 border-2 border-red-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl">
+    <div style={{gridRow:'1/7',gridColumn:'1/7'}} className={`rounded-2xl bg-slate-950 border-2 border-red-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${disconnectedMap?.red ? 'opacity-30 grayscale' : ''}`}>
       <SpiderWebBg strokeColor={CT.red.hex} active={currentTurn === 'red'} />
       <div className="flex items-center justify-between z-10">
         <span className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1">
@@ -247,7 +249,7 @@ const StaticBoard = memo(({ is2P, currentTurn }: { is2P: boolean; currentTurn: L
     })}
 
     {/* ─── Green Spider Base ─── */}
-    <div style={{gridRow:'1/7',gridColumn:'10/16'}} className={`rounded-2xl bg-slate-950 border-2 border-emerald-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${is2P?'opacity-30 grayscale':''}`}>
+    <div style={{gridRow:'1/7',gridColumn:'10/16'}} className={`rounded-2xl bg-slate-950 border-2 border-emerald-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${is2P || disconnectedMap?.green ? 'opacity-30 grayscale' : ''}`}>
       <SpiderWebBg strokeColor={CT.green.hex} active={currentTurn === 'green'} />
       <div className="flex items-center justify-between z-10">
         <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-1">
@@ -278,7 +280,7 @@ const StaticBoard = memo(({ is2P, currentTurn }: { is2P: boolean; currentTurn: L
     })}
 
     {/* ─── Blue Spider Base ─── */}
-    <div style={{gridRow:'10/16',gridColumn:'1/7'}} className={`rounded-2xl bg-slate-950 border-2 border-blue-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${is2P?'opacity-30 grayscale':''}`}>
+    <div style={{gridRow:'10/16',gridColumn:'1/7'}} className={`rounded-2xl bg-slate-950 border-2 border-blue-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${is2P || disconnectedMap?.blue ? 'opacity-30 grayscale' : ''}`}>
       <SpiderWebBg strokeColor={CT.blue.hex} active={currentTurn === 'blue'} />
       <div className="flex items-center justify-between z-10">
         <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-1">
@@ -296,7 +298,7 @@ const StaticBoard = memo(({ is2P, currentTurn }: { is2P: boolean; currentTurn: L
     })}
 
     {/* ─── Yellow Spider Base ─── */}
-    <div style={{gridRow:'10/16',gridColumn:'10/16'}} className="rounded-2xl bg-slate-950 border-2 border-amber-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl">
+    <div style={{gridRow:'10/16',gridColumn:'10/16'}} className={`rounded-2xl bg-slate-950 border-2 border-amber-500/60 p-2 relative overflow-hidden flex flex-col justify-between shadow-2xl ${disconnectedMap?.yellow ? 'opacity-30 grayscale' : ''}`}>
       <SpiderWebBg strokeColor={CT.yellow.hex} active={currentTurn === 'yellow'} />
       <div className="flex items-center justify-between z-10">
         <span className="text-[9px] font-black text-amber-300 uppercase tracking-widest flex items-center gap-1">
@@ -671,22 +673,29 @@ export const GlassLudoBoard: React.FC = () => {
     });
   });
 
+  const disconnectedMap: Record<LudoColor, boolean> = {
+    red: roomState?.ludoPlayers?.red ? !roomState.ludoPlayers.red.connected : false,
+    green: roomState?.ludoPlayers?.green ? !roomState.ludoPlayers.green.connected : false,
+    yellow: roomState?.ludoPlayers?.yellow ? !roomState.ludoPlayers.yellow.connected : false,
+    blue: roomState?.ludoPlayers?.blue ? !roomState.ludoPlayers.blue.connected : false,
+  };
+
   const turnConfig = CT[currentTurn] || CT.red;
 
   return (
-    <div className="relative flex flex-col lg:flex-row items-center justify-center gap-6 w-full max-w-6xl mx-auto select-none">
-      <div className="flex flex-col items-center justify-center gap-3">
+    <div className="relative flex flex-col items-center justify-center gap-2 w-full max-w-5xl mx-auto select-none min-h-0">
+      <div className="flex flex-col items-center justify-center gap-2 max-h-full">
 
         {/* Header bar */}
-        <div className="flex items-center justify-between w-full max-w-[500px] p-3 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-xl">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-bold text-xs">
-              <Clock size={13} className="text-amber-400" style={{animation:'spin 3s linear infinite'}}/>
+        <div className="flex items-center justify-between w-full max-w-[clamp(260px,56dvh,500px)] p-2 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-xl">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-bold text-xs">
+              <Clock size={12} className="text-amber-400" style={{animation:'spin 3s linear infinite'}}/>
               <span>{timer}s</span>
             </div>
             <div>
-              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest block">CURRENT TURN</span>
-              <span className={`text-sm font-extrabold uppercase tracking-wider ${turnConfig.text}`}>
+              <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest block">CURRENT TURN</span>
+              <span className={`text-xs font-extrabold uppercase tracking-wider ${turnConfig.text}`}>
                 {currentTurn} PLAYER {!isMyTurn&&'(WAITING...)'}
               </span>
             </div>
@@ -694,11 +703,11 @@ export const GlassLudoBoard: React.FC = () => {
           <Dice3D value={diceValue} isRolling={isRolling} onRoll={roll} disabled={!isMyTurn||hasRolled||isRolling||isMoving||roomState?.status!=='playing'}/>
         </div>
 
-        {/* Board frame */}
-        <div className="relative p-2 rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl w-[340px] sm:w-[440px] md:w-[500px] aspect-square overflow-hidden">
+        {/* Board frame (Modern Fluid Auto-Scaling) */}
+        <div className="relative p-2 rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl w-[clamp(260px,56dvh,500px)] h-[clamp(260px,56dvh,500px)] aspect-square overflow-hidden">
 
           {/* LAYER 1: Static board with Spider-Man Theme */}
-          <StaticBoard is2P={is2P} currentTurn={currentTurn} />
+          <StaticBoard is2P={is2P} currentTurn={currentTurn} disconnectedMap={disconnectedMap} />
 
           {/* LAYER 2: Token overlay */}
           <div className="absolute inset-2 pointer-events-none" style={{...GRID_STYLE, zIndex: 20}}>
@@ -744,6 +753,7 @@ export const GlassLudoBoard: React.FC = () => {
                   isMoving={steppingTokenKey === `${t.color}-${t.token.id}`}
                   isCaptured={t.isRecentCapture}
                   isAtHome={t.isAtHome}
+                  isDisconnected={disconnectedMap[t.color]}
                 />
 
                 {/* Explicit Stack Count Badge when multiple tokens share the exact same cell */}
@@ -787,37 +797,33 @@ export const GlassLudoBoard: React.FC = () => {
 
           </div>
         </div>
-      </div>
 
-      {/* Sidebar */}
-      <div className="w-full lg:w-72 flex flex-col gap-3">
-        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Players ({is2P?2:4})</h4>
-        {active.map(color=>{
-          const on=currentTurn===color;
-          const done=ludoState.tokens[color].filter(t=>t.step===57).length;
-          return(
-            <div key={color} className={`p-3 rounded-2xl bg-slate-900/80 backdrop-blur-xl border transition-all ${on?`${CT[color].border} shadow-lg ${CT[color].glow} bg-white/10`:'border-white/10 opacity-70'}`}>
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <div className={`w-4 h-4 rounded-full ${CT[color].bg}`}/>
-                  <span className={`font-extrabold text-xs uppercase ${CT[color].text}`}>{color} Player</span>
-                </div>
-                {on&&<span className="text-[9px] font-bold bg-cyan-500 text-slate-950 px-2 py-0.5 rounded-full uppercase animate-pulse">Active</span>}
+        {/* Active Players Esports Score Bar */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 max-w-[clamp(260px,56dvh,500px)] w-full px-2.5 py-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden mt-1 select-none">
+          {active.map(color => {
+            const on = currentTurn === color;
+            const lp = roomState?.ludoPlayers?.[color];
+            const isConnected = lp ? lp.connected : true;
+            const done = ludoState.tokens[color]?.filter(t => t.step === 57).length || 0;
+            return (
+              <div
+                key={color}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all whitespace-nowrap ${
+                  on && isConnected
+                    ? `${CT[color].border} bg-slate-900/90 ${CT[color].text} font-bold shadow-glow-cyan ring-1 ring-cyan-400/40 scale-105 z-10`
+                    : `${CT[color].border}/40 bg-slate-950/60 ${CT[color].text} ${!isConnected ? 'opacity-50' : 'opacity-70'}`
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full shrink-0 ${CT[color].bg} ${on && isConnected ? 'animate-ping' : ''}`} />
+                <span className="uppercase text-[10px] font-black tracking-wider font-mono">
+                  {color}
+                </span>
+                <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md font-mono ${on && isConnected ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-200'}`}>
+                  {isConnected ? `${done}/4` : 'LEFT'}
+                </span>
               </div>
-              <div className="flex justify-between text-[11px] text-gray-400">
-                <span>Tokens Home:</span>
-                <span className="font-bold text-white">{done}/4</span>
-              </div>
-            </div>
-          );
-        })}
-        <div className="p-3 rounded-2xl bg-slate-900/70 border border-white/10 max-h-40 overflow-y-auto custom-scrollbar">
-          <h5 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Game Log</h5>
-          <div className="space-y-1 text-[10px]">
-            {roomState.moveHistory.slice(-6).map((l,i)=>(
-              <div key={i} className="text-gray-300 font-mono">• {l.actionText}</div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>

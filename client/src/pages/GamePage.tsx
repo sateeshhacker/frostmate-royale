@@ -17,6 +17,21 @@ export const GamePage: React.FC = () => {
   const playerColor = useGameStore((s) => s.playerColor);
   const [codeCopied, setCodeCopied] = useState(false);
 
+  // Modern Tech: Auto-Adjust Layout on Ctrl+ / Ctrl- Browser Zoom & Visual Viewport Changes
+  React.useEffect(() => {
+    const handleZoomOrResize = () => {
+      window.dispatchEvent(new Event('resize'));
+    };
+
+    window.addEventListener('resize', handleZoomOrResize);
+    window.visualViewport?.addEventListener('resize', handleZoomOrResize);
+
+    return () => {
+      window.removeEventListener('resize', handleZoomOrResize);
+      window.visualViewport?.removeEventListener('resize', handleZoomOrResize);
+    };
+  }, []);
+
   if (!roomState) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center p-6 text-center text-white bg-[#030611]">
@@ -65,30 +80,30 @@ export const GamePage: React.FC = () => {
   };
 
   return (
-    <div className="relative h-screen max-h-screen w-screen max-w-full overflow-hidden flex flex-col justify-between p-2 sm:p-4 text-white z-10 select-none bg-[#030611]">
+    <div className="relative h-[100dvh] max-h-[100dvh] w-screen max-w-full overflow-hidden flex flex-col justify-between p-1.5 sm:p-3 text-white z-10 select-none bg-[#030611]">
       <VictoryOverlay />
       <ExportModal />
       <DisconnectBanner />
 
-      {/* 1. Header Control Bar */}
-      <header className="w-full max-w-7xl mx-auto flex items-center justify-between px-3 py-2 rounded-2xl bg-[#0B1225]/85 border border-white/10 backdrop-blur-xl z-20 shrink-0 shadow-lg">
+      {/* 1. Header Control Bar (Compact Viewport Height) */}
+      <header className="w-full max-w-7xl mx-auto flex items-center justify-between px-3 py-1.5 rounded-2xl bg-[#0B1225]/85 border border-white/10 backdrop-blur-xl z-20 shrink-0 shadow-lg h-11">
         {/* Left: Logo & Room Code Copy Badge */}
-        <div className="flex items-center gap-3">
-          <span className="font-display font-black text-sm sm:text-base tracking-wider text-white">
+        <div className="flex items-center gap-2.5">
+          <span className="font-display font-black text-xs sm:text-sm tracking-wider text-white">
             FROSTMATE ROYALE
           </span>
           <button
             onClick={handleCopyCode}
-            className="px-3 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-mono font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-2.5 py-0.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer"
             title="Click to copy Room Code"
           >
             <span>ROOM: {roomState.code}</span>
-            {codeCopied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+            {codeCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           </button>
         </div>
 
         {/* Center: Live Match Status Pill */}
-        <div className="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-white/15 text-xs font-mono font-bold">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-white/15 text-[11px] font-mono font-bold">
           <span className={`w-2 h-2 rounded-full ${roomState.isCheck ? 'bg-red-500 animate-ping' : 'bg-cyan-400'}`} />
           <span className={roomState.isCheck ? 'text-red-400 font-black' : 'text-cyan-300'}>
             {getStatusText()}
@@ -98,32 +113,34 @@ export const GamePage: React.FC = () => {
         {/* Right: Exit to Home Action */}
         <button
           onClick={handleExitGame}
-          className="px-3.5 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 hover:text-white text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+          className="px-3 py-1 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 hover:text-white text-[11px] font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
           title="Exit match and return to Home Page"
         >
-          <Home size={14} />
+          <Home size={13} />
           <span>EXIT TO HOME</span>
         </button>
       </header>
 
-      {/* 2. Main Arena Stage & Sidebar Layout */}
-      <main className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-center gap-4 max-w-7xl mx-auto w-full overflow-hidden my-auto py-2">
+      {/* 2. Main Arena Stage & Sidebar Layout (Fluid Fit within Available Height) */}
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-center gap-3 sm:gap-4 max-w-7xl mx-auto w-full overflow-hidden my-auto py-1">
         {/* Left Side: Esports Game Board Arena */}
-        <div className="flex-1 min-h-0 h-full w-full flex flex-col items-center justify-between overflow-hidden">
+        <div className="flex-1 min-h-0 h-full w-full flex flex-col items-center justify-center overflow-hidden">
           {!isLudo && !isRPS && <TopPlayerBar />}
-          {isRPS ? <RPSGame /> : isLudo ? <GlassLudoBoard /> : <GlassChessboard />}
+          <div className="flex-1 min-h-0 flex items-center justify-center w-full py-1">
+            {isRPS ? <RPSGame /> : isLudo ? <GlassLudoBoard /> : <GlassChessboard />}
+          </div>
           {!isLudo && !isRPS && <BottomPlayerBar />}
         </div>
 
         {/* Right Side: Interactive Match Console */}
-        <div className="w-full lg:w-auto flex justify-center shrink-0">
+        <div className="w-full lg:w-auto flex justify-center shrink-0 max-h-full">
           <RightSidebar />
         </div>
       </main>
 
-      {/* 3. Footer */}
-      <footer className="w-full text-center py-1 text-xs font-mono font-bold text-[#8D9AB2] shrink-0 border-t border-white/5">
-        Developed by <span className="text-cyan-400 font-extrabold">Sateesh</span> • FrostMate Royale © 2026
+      {/* 3. Compact Footer */}
+      <footer className="w-full text-center py-0.5 text-[10px] font-mono font-bold text-[#8D9AB2] shrink-0 border-t border-white/5 h-6 flex items-center justify-center">
+        Developed by <span className="text-cyan-400 font-extrabold ml-1">Sateesh</span> • FrostMate Royale © 2026
       </footer>
     </div>
   );
