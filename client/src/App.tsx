@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ConfigProvider, theme, App as AntApp } from 'antd';
 import { useGameStore } from './store/useGameStore.js';
 import { initSocketListeners } from './socket/socketClient.js';
 import { AuroraBackground } from './components/background/AuroraBackground.js';
@@ -71,20 +72,35 @@ export const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="relative min-h-screen bg-slate-950 font-sans selection:bg-cyan-500 selection:text-black">
-        {/* WebGL Canvas Aurora Background */}
-        <AuroraBackground />
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+          token: {
+            colorPrimary: '#38bdf8',
+            colorBgBase: '#030611',
+            colorContainer: '#0B1225',
+            borderRadius: 16,
+            fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+          }
+        }}
+      >
+        <AntApp>
+          <div className="relative min-h-screen bg-[#030611] font-sans selection:bg-cyan-500 selection:text-black touch-manipulation">
+            {/* WebGL Canvas Aurora Background */}
+            <AuroraBackground />
 
-        {/* Main Screen Views */}
-        {viewMode === 'landing' && <LauncherPage />}
-        {viewMode === 'waiting' && (
-          <>
-            <LauncherPage />
-            <WaitingModal />
-          </>
-        )}
-        {viewMode === 'game' && <GamePage />}
-      </div>
+            {/* Main Screen Views */}
+            {viewMode === 'landing' && <LauncherPage />}
+            {viewMode === 'waiting' && (
+              <>
+                <LauncherPage />
+                <WaitingModal />
+              </>
+            )}
+            {viewMode === 'game' && <GamePage />}
+          </div>
+        </AntApp>
+      </ConfigProvider>
     </ErrorBoundary>
   );
 };

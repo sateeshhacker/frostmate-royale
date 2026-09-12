@@ -138,7 +138,7 @@ export const TopPlayerBar: React.FC = () => {
   const topMaterialDiff = topColor === 'w' ? whiteValue - blackValue : blackValue - whiteValue;
 
   return (
-    <div className="w-full max-w-[clamp(260px,58dvh,540px)] mx-auto mb-1 shrink-0">
+    <div className="w-full max-w-[clamp(240px,min(56dvh,calc(100vw-24px)),520px)] mx-auto mb-1 shrink-0">
       <PlayerCard
         player={topPlayer}
         color={topColor}
@@ -166,7 +166,7 @@ export const BottomPlayerBar: React.FC = () => {
   const bottomMaterialDiff = bottomColor === 'w' ? whiteValue - blackValue : blackValue - whiteValue;
 
   return (
-    <div className="w-full max-w-[clamp(260px,58dvh,540px)] mx-auto mt-1 shrink-0">
+    <div className="w-full max-w-[clamp(240px,min(56dvh,calc(100vw-24px)),520px)] mx-auto mt-1 shrink-0">
       <PlayerCard
         player={bottomPlayer}
         color={bottomColor}

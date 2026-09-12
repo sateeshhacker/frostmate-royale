@@ -16,7 +16,7 @@ import { soundEngine } from '../../audio/soundEngine.js';
 export const RightSidebar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'history' | 'actions' | 'settings'>('chat');
   const [chatInput, setChatInput] = useState('');
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
   const [localNotice, setLocalNotice] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -148,7 +148,17 @@ export const RightSidebar: React.FC = () => {
 
   // Expanded Panel with Dynamic Viewport Height (Auto-Scales on Ctrl+ / Ctrl-)
   return (
-    <div className="w-full lg:w-80 xl:w-96 flex flex-col h-[clamp(300px,76dvh,580px)] rounded-2xl sm:rounded-3xl bg-[#0B1225]/90 backdrop-blur-2xl border border-white/15 shadow-2xl overflow-hidden shrink-0 transition-all">
+    <>
+      {/* Mobile Backdrop Overlay (Click outside to minimize on mobile) */}
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+        onClick={() => {
+          setIsMinimized(true);
+          soundEngine.playClick();
+        }}
+      />
+
+      <div className="fixed inset-x-2 bottom-2 z-50 max-h-[82dvh] h-[500px] rounded-2xl sm:rounded-3xl bg-[#0B1225]/95 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden flex flex-col transition-all lg:relative lg:inset-auto lg:z-auto lg:max-h-none lg:w-80 xl:w-96 lg:h-[clamp(300px,76dvh,580px)] lg:bg-[#0B1225]/90 lg:border-white/15 shrink-0">
       {/* Sidebar Navigation Tabs & Minimize Button */}
       <div className="flex items-center justify-between border-b border-white/10 p-1.5 bg-black/20 shrink-0">
         <div className="flex flex-1 gap-1">
@@ -450,5 +460,6 @@ export const RightSidebar: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };

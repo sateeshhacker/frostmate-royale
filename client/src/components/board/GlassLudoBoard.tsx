@@ -687,15 +687,15 @@ export const GlassLudoBoard: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-2 max-h-full">
 
         {/* Header bar */}
-        <div className="flex items-center justify-between w-full max-w-[clamp(260px,56dvh,500px)] p-2 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-xl">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-bold text-xs">
-              <Clock size={12} className="text-amber-400" style={{animation:'spin 3s linear infinite'}}/>
+        <div className="flex items-center justify-between w-full max-w-[clamp(240px,min(54dvh,calc(100vw-20px)),480px)] p-1.5 sm:p-2 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-white/15 shadow-xl">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2 py-0.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 font-mono font-bold text-[11px] sm:text-xs">
+              <Clock size={11} className="text-amber-400" style={{animation:'spin 3s linear infinite'}}/>
               <span>{timer}s</span>
             </div>
             <div>
-              <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-widest block">CURRENT TURN</span>
-              <span className={`text-xs font-extrabold uppercase tracking-wider ${turnConfig.text}`}>
+              <span className="text-[8px] sm:text-[9px] font-semibold text-gray-400 uppercase tracking-widest block">CURRENT TURN</span>
+              <span className={`text-[11px] sm:text-xs font-extrabold uppercase tracking-wider ${turnConfig.text}`}>
                 {currentTurn} PLAYER {!isMyTurn&&'(WAITING...)'}
               </span>
             </div>
@@ -704,7 +704,7 @@ export const GlassLudoBoard: React.FC = () => {
         </div>
 
         {/* Board frame (Modern Fluid Auto-Scaling) */}
-        <div className="relative p-2 rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl w-[clamp(260px,56dvh,500px)] h-[clamp(260px,56dvh,500px)] aspect-square overflow-hidden">
+        <div className="relative p-1.5 sm:p-2 rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl w-[clamp(240px,min(54dvh,calc(100vw-20px)),480px)] h-[clamp(240px,min(54dvh,calc(100vw-20px)),480px)] aspect-square overflow-hidden">
 
           {/* LAYER 1: Static board with Spider-Man Theme */}
           <StaticBoard is2P={is2P} currentTurn={currentTurn} disconnectedMap={disconnectedMap} />
@@ -799,7 +799,7 @@ export const GlassLudoBoard: React.FC = () => {
         </div>
 
         {/* Active Players Esports Score Bar */}
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 max-w-[clamp(260px,56dvh,500px)] w-full px-2.5 py-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden mt-1 select-none">
+        <div className="flex items-center justify-center gap-1 sm:gap-2 max-w-[clamp(240px,min(54dvh,calc(100vw-20px)),480px)] w-full px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-white/15 shadow-2xl overflow-hidden mt-1 select-none">
           {active.map(color => {
             const on = currentTurn === color;
             const lp = roomState?.ludoPlayers?.[color];
@@ -808,17 +808,17 @@ export const GlassLudoBoard: React.FC = () => {
             return (
               <div
                 key={color}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all whitespace-nowrap ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-xl border transition-all whitespace-nowrap min-w-0 ${
                   on && isConnected
-                    ? `${CT[color].border} bg-slate-900/90 ${CT[color].text} font-bold shadow-glow-cyan ring-1 ring-cyan-400/40 scale-105 z-10`
+                    ? `${CT[color].border} bg-slate-900/90 ${CT[color].text} font-bold shadow-glow-cyan ring-1 ring-cyan-400/40 scale-102 sm:scale-105 z-10`
                     : `${CT[color].border}/40 bg-slate-950/60 ${CT[color].text} ${!isConnected ? 'opacity-50' : 'opacity-70'}`
                 }`}
               >
-                <span className={`w-2 h-2 rounded-full shrink-0 ${CT[color].bg} ${on && isConnected ? 'animate-ping' : ''}`} />
-                <span className="uppercase text-[10px] font-black tracking-wider font-mono">
+                <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full shrink-0 ${CT[color].bg} ${on && isConnected ? 'animate-ping' : ''}`} />
+                <span className="uppercase text-[8px] sm:text-[10px] font-black tracking-wider font-mono">
                   {color}
                 </span>
-                <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-md font-mono ${on && isConnected ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-200'}`}>
+                <span className={`text-[8px] sm:text-[10px] font-extrabold px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded font-mono ${on && isConnected ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-200'}`}>
                   {isConnected ? `${done}/4` : 'LEFT'}
                 </span>
               </div>

@@ -86,19 +86,19 @@ export const GamePage: React.FC = () => {
       <DisconnectBanner />
 
       {/* 1. Header Control Bar (Compact Viewport Height) */}
-      <header className="w-full max-w-7xl mx-auto flex items-center justify-between px-3 py-1.5 rounded-2xl bg-[#0B1225]/85 border border-white/10 backdrop-blur-xl z-20 shrink-0 shadow-lg h-11">
+      <header className="w-full max-w-7xl mx-auto flex items-center justify-between px-2 sm:px-3 py-1 sm:py-1.5 rounded-2xl bg-[#0B1225]/85 border border-white/10 backdrop-blur-xl z-20 shrink-0 shadow-lg h-10 sm:h-11">
         {/* Left: Logo & Room Code Copy Badge */}
-        <div className="flex items-center gap-2.5">
-          <span className="font-display font-black text-xs sm:text-sm tracking-wider text-white">
-            FROSTMATE ROYALE
+        <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
+          <span className="font-display font-black text-xs sm:text-sm tracking-wider text-white truncate shrink-0">
+            <span className="hidden xs:inline">FROSTMATE </span>ROYALE
           </span>
           <button
             onClick={handleCopyCode}
-            className="px-2.5 py-0.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-2 sm:px-2.5 py-0.5 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 font-mono font-bold text-[10px] sm:text-[11px] flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer shrink-0"
             title="Click to copy Room Code"
           >
             <span>ROOM: {roomState.code}</span>
-            {codeCopied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+            {codeCopied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
           </button>
         </div>
 
@@ -113,27 +113,27 @@ export const GamePage: React.FC = () => {
         {/* Right: Exit to Home Action */}
         <button
           onClick={handleExitGame}
-          className="px-3 py-1 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 hover:text-white text-[11px] font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
+          className="px-2.5 sm:px-3 py-1 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 hover:text-white text-[10px] sm:text-[11px] font-bold font-mono uppercase tracking-wider flex items-center gap-1 sm:gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer shrink-0"
           title="Exit match and return to Home Page"
         >
-          <Home size={13} />
-          <span>EXIT TO HOME</span>
+          <Home size={12} />
+          <span>EXIT<span className="hidden sm:inline"> TO HOME</span></span>
         </button>
       </header>
 
       {/* 2. Main Arena Stage & Sidebar Layout (Fluid Fit within Available Height) */}
-      <main className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-center gap-3 sm:gap-4 max-w-7xl mx-auto w-full overflow-hidden my-auto py-1">
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-center gap-1.5 sm:gap-3 lg:gap-4 max-w-7xl mx-auto w-full overflow-hidden my-auto py-0.5 sm:py-1">
         {/* Left Side: Esports Game Board Arena */}
         <div className="flex-1 min-h-0 h-full w-full flex flex-col items-center justify-center overflow-hidden">
           {!isLudo && !isRPS && <TopPlayerBar />}
-          <div className="flex-1 min-h-0 flex items-center justify-center w-full py-1">
+          <div className="flex-1 min-h-0 flex items-center justify-center w-full py-0.5 sm:py-1">
             {isRPS ? <RPSGame /> : isLudo ? <GlassLudoBoard /> : <GlassChessboard />}
           </div>
           {!isLudo && !isRPS && <BottomPlayerBar />}
         </div>
 
         {/* Right Side: Interactive Match Console */}
-        <div className="w-full lg:w-auto flex justify-center shrink-0 max-h-full">
+        <div className="w-full lg:w-auto flex justify-center shrink-0 max-h-full pb-0.5 lg:pb-0">
           <RightSidebar />
         </div>
       </main>

@@ -219,10 +219,14 @@ export const RPSArenaCanvas: React.FC<RPSArenaCanvasProps> = ({
           cameraRef.current.lookAt(0, 0, 0);
         }
 
-        // Idle Character-Specific Physical Movement with Strict X Separation
+        // Idle Character-Specific Physical Movement with Dynamic Adaptive Separation
         if (!reducedMotion && (phase === 'CHOOSING' || phase === 'PLAYER_LOCKED' || phase === 'BOTH_LOCKED')) {
+          const currentWidth = container.clientWidth || 600;
+          const currentAspect = (container.clientHeight ? currentWidth / container.clientHeight : 1.5);
+          const meshX = currentAspect < 1.0 ? 1.4 : currentWidth < 480 ? 1.5 : 1.8;
+
           if (rockMeshRef.current) {
-            rockMeshRef.current.position.set(-1.8, Math.sin(clock * 1.0) * 0.03, 0);
+            rockMeshRef.current.position.set(-meshX, Math.sin(clock * 1.0) * 0.03, 0);
             rockMeshRef.current.rotation.y += 0.003;
           }
           if (paperMeshRef.current) {
@@ -230,7 +234,7 @@ export const RPSArenaCanvas: React.FC<RPSArenaCanvasProps> = ({
             paperMeshRef.current.rotation.z = Math.sin(clock * 1.1) * 0.05;
           }
           if (scissorsGroupRef.current) {
-            scissorsGroupRef.current.position.set(1.8, Math.sin(clock * 1.2 + 0.5) * 0.04, 0);
+            scissorsGroupRef.current.position.set(meshX, Math.sin(clock * 1.2 + 0.5) * 0.04, 0);
             scissorsGroupRef.current.rotation.y += 0.004;
           }
         }
@@ -245,7 +249,18 @@ export const RPSArenaCanvas: React.FC<RPSArenaCanvasProps> = ({
         const w = entry.contentRect.width || container.clientWidth || 600;
         const h = entry.contentRect.height || container.clientHeight || 320;
         if (w > 0 && h > 0) {
-          camera.aspect = w / h;
+          const aspect = w / h;
+          camera.aspect = aspect;
+
+          // Universal dynamic camera fit:
+          // Keep all 3 models fully visible at any aspect ratio (mobile portrait, square, wide desktop):
+          const vFovRad = (camera.fov * Math.PI) / 360;
+          const halfSpan = 2.4;
+          const effectiveAspect = Math.min(aspect, 1.5);
+          const requiredZ = Math.max(5.4, halfSpan / (Math.tan(vFovRad) * Math.max(effectiveAspect, 0.55)));
+          camera.position.z = Math.min(requiredZ, 8.2);
+          camera.position.y = aspect < 1.0 ? 0.15 : 0.25;
+
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
         }

@@ -4,9 +4,14 @@
 
 @layer base {
   html, body, #root {
-    @apply min-h-screen w-full bg-slate-950 text-white font-sans antialiased select-none;
+    @apply min-h-screen w-full bg-[#030611] text-white font-sans antialiased select-none;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, [role="button"] {
+    touch-action: manipulation;
   }
 }
 

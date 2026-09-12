@@ -48,7 +48,7 @@ export const RPSGame: React.FC = () => {
   const isGameOver = phase === 'MATCH_COMPLETE';
 
   return (
-    <div className="relative w-full max-w-4xl h-[clamp(300px,76dvh,580px)] flex flex-col justify-between p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none my-auto">
+    <div className="relative w-full max-w-4xl h-full max-h-[clamp(300px,min(76dvh,calc(100vw-12px)),560px)] flex flex-col justify-between p-2 sm:p-3 md:p-4 rounded-2xl sm:rounded-3xl bg-[#0B1224]/95 backdrop-blur-2xl border border-white/10 shadow-2xl overflow-hidden select-none my-auto">
       
       {/* Background Soft Atmospheric Lighting */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#111A30]/40 via-transparent to-[#030611]/80 pointer-events-none" />
@@ -64,7 +64,7 @@ export const RPSGame: React.FC = () => {
       />
 
       {/* 2. Center: Universal Responsive 3D RPS Arena Stage */}
-      <div className="relative z-10 w-full flex-1 min-h-[220px] sm:min-h-[260px] my-2 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
+      <div className="relative z-10 w-full flex-1 min-h-[110px] sm:min-h-[150px] md:min-h-[190px] my-1 sm:my-2 rounded-2xl bg-[#070B18] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-inner">
         <RPSArenaCanvas
           playerChoice={playerChoice}
           opponentChoice={opponentChoice}
@@ -78,10 +78,10 @@ export const RPSGame: React.FC = () => {
             <motion.div
               key={countdownSequenceText}
               initial={{ scale: 0.3, opacity: 0 }}
-              animate={{ scale: 1.4, opacity: 1 }}
+              animate={{ scale: 1.3, opacity: 1 }}
               exit={{ scale: 2, opacity: 0 }}
               transition={{ duration: 0.35, type: 'spring' }}
-              className="absolute z-30 text-3xl sm:text-5xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] via-white to-[#FF5F6D] drop-shadow-2xl uppercase"
+              className="absolute z-30 text-2xl sm:text-4xl md:text-5xl font-black font-display text-transparent bg-clip-text bg-gradient-to-r from-[#38bdf8] via-white to-[#FF5F6D] drop-shadow-2xl uppercase"
             >
               {countdownSequenceText}
             </motion.div>
@@ -90,11 +90,11 @@ export const RPSGame: React.FC = () => {
 
         {/* Outcome Toast Banner Floating Over 3D Arena */}
         {!countdownSequenceText && (phase === 'REVEAL' || phase === 'RESULT') && roundOutcome && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
             <motion.div
               initial={{ y: 20, opacity: 0, scale: 0.9 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
-              className={`px-5 py-2 rounded-full text-xs font-black tracking-wider uppercase border shadow-2xl backdrop-blur-xl ${
+              className={`px-3 sm:px-5 py-1 sm:py-2 rounded-full text-[10px] sm:text-xs font-black tracking-wider uppercase border shadow-2xl backdrop-blur-xl ${
                 roundOutcome === 'win'
                   ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-glow-cyan'
                   : roundOutcome === 'lose'
